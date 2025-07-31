@@ -17,6 +17,9 @@ pub enum AppError {
     #[msg("Question is not active")]
     QuestionInActive,
 
+    #[msg("User did not select the correct choice")]
+    NotCorrectChoice,
+
     #[msg("User has not voted yet")]
     NotVote,
 

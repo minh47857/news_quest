@@ -6,3 +6,5 @@ pub struct DaoConfig {
     pub total_questions: u64,
     pub reward_mint: Pubkey, 
 }
+
+pub const DAO_CONFIG_SIZE: usize = 8 + 32 + 8 + 32;

@@ -46,8 +46,14 @@ impl <'info> Vote<'info> {
         require!(question.is_active, AppError::QuestionInActive);
         require!(vote_record.has_voted == false, AppError::QuestionAlreadyVoted);
 
+        require!(
+            (choice as usize) < question.choices.len(),
+            AppError::InvalidChoices
+        );
+
         vote_record.choice = choice;
         vote_record.has_voted = true;
+
         Ok(())
     }
     

@@ -62,9 +62,12 @@ pub struct ClaimReward<'info> {
 impl <'info> ClaimReward <'info> {
     pub fn process(&mut self) -> Result<()> {
         let vote_record = &mut self.vote_record;
+        let question = &mut self.question;
 
         require!(vote_record.has_voted, AppError::NotVote);
         require!(!vote_record.claimed, AppError::AlreadyClaimed);
+
+        require!(question.correct_choice == vote_record.choice, AppError::NotCorrectChoice);
 
         let ctx = CpiContext::new(
             self.token_program.to_account_info(),

@@ -11,6 +11,9 @@ declare_id!("5Whv2g9gDJZnj9nsh2DFgQS9KQek7PZT4CJZeGxB1RxY");
 #[program]
 pub mod news_quest {
     use super::*;
+    pub fn initialize(ctx: Context<Initialize>, reward_mint: Pubkey) -> Result<()> {
+        ctx.accounts.initialize(reward_mint)
+    }
 
     pub fn create_quest(
         ctx: Context<CreateQuest>, 
