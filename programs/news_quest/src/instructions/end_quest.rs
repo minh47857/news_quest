@@ -1,9 +1,9 @@
 use anchor_lang::prelude::*;
 
 use crate::{
-    constant::{QUESTION_SEED},
+    constant::{QUESTION_SEED, DAO_CONFIG_SEED},
     error::AppError,
-    Question,
+    Question, DaoConfig,
 };
 
 #[derive(Accounts)]
@@ -11,6 +11,12 @@ use crate::{
 pub struct EndQuest<'info> {
     #[account(mut)]
     pub admin: Signer<'info>,
+
+    #[account(
+        seeds = [DAO_CONFIG_SEED],
+        bump,
+    )]
+    pub dao_config: Account<'info, DaoConfig>,
 
     #[account(
         mut,
@@ -25,6 +31,11 @@ pub struct EndQuest<'info> {
 
 impl<'info> EndQuest<'info> {
     pub fn process(&mut self) -> Result<()> {
+        require_keys_eq!(
+            self.dao_config.admin,
+            self.admin.key(),
+            AppError::Unauthorized
+        );
         let question = &mut self.question;
         require!(question.is_active, AppError::QuestionAlreadyEnded);
         question.is_active = false;

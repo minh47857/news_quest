@@ -29,6 +29,9 @@ pub enum AppError {
     #[msg("Reward cannot be claimed after the deadline")]
     NotAfterDeadline,
 
-     #[msg("The question has already ended.")]
+    #[msg("The question has already ended.")]
     QuestionAlreadyEnded,
+    
+    #[msg("You are not authorized to perform this action.")]
+    Unauthorized,
 }
