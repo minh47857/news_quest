@@ -28,4 +28,7 @@ pub enum AppError {
 
     #[msg("Reward cannot be claimed after the deadline")]
     NotAfterDeadline,
+
+     #[msg("The question has already ended.")]
+    QuestionAlreadyEnded,
 }

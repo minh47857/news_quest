@@ -6,7 +6,7 @@ pub use instructions::*;
 mod constant;
 mod error;
 
-declare_id!("5Whv2g9gDJZnj9nsh2DFgQS9KQek7PZT4CJZeGxB1RxY");
+declare_id!("6LWu2MDNZyBkkJ2gr6KL2hPqkRmDUac6VNNuw4TCdKEX");
 
 #[program]
 pub mod news_quest {
@@ -32,6 +32,10 @@ pub mod news_quest {
     }
 
     pub fn claim_reward(ctx: Context<ClaimReward>, _id: u64) -> Result<()> {
+        ctx.accounts.process()
+    }
+    
+    pub fn end_quest(ctx: Context<EndQuest>, _id: u64) -> Result<()> {
         ctx.accounts.process()
     }
 }
