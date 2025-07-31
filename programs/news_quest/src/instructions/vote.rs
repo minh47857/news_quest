@@ -10,7 +10,7 @@ use crate::{
 #[instruction(id: u64)]
 pub struct Vote<'info> {
     #[account(mut)]
-    user: Signer<'info>,
+    pub user: Signer<'info>,
 
     #[account(
         mut,
@@ -53,6 +53,9 @@ impl <'info> Vote<'info> {
 
         vote_record.choice = choice;
         vote_record.has_voted = true;
+
+        question.choices[choice as usize].total_votes += 1;
+        question.total_votes += 1;
 
         Ok(())
     }

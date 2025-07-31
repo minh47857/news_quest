@@ -5,7 +5,7 @@ use crate::{constant::DAO_CONFIG_SEED, DaoConfig, DAO_CONFIG_SIZE};
 #[derive(Accounts)]
 pub struct Initialize<'info> {
     #[account(mut)]
-    admin: Signer<'info>,
+    pub admin: Signer<'info>,
 
     #[account(
         init,

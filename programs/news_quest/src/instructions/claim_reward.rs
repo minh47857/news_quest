@@ -3,7 +3,7 @@ use anchor_spl::token::{mint_to, Mint, MintTo, Token, TokenAccount};
 
 use crate::{
     error::AppError,
-    constant::{DAO_CONFIG_SEED, QUESTION_SEED, VOTE_RECORD_SEED}, question, DaoConfig, Question, VoteRecord
+    constant::{DAO_CONFIG_SEED, QUESTION_SEED, VOTE_RECORD_SEED}, DaoConfig, Question, VoteRecord
 };
 
 #[derive(Accounts)]
@@ -51,7 +51,7 @@ pub struct ClaimReward<'info> {
     #[account(
         mut,
         associated_token::mint = token_mint,
-        associated_token::authority = dao_config,
+        associated_token::authority = user,
         
     )]
     pub user_token_account: Account<'info, TokenAccount>,
@@ -67,7 +67,9 @@ impl <'info> ClaimReward <'info> {
         require!(vote_record.has_voted, AppError::NotVote);
         require!(!vote_record.claimed, AppError::AlreadyClaimed);
 
-        require!(question.correct_choice == vote_record.choice, AppError::NotCorrectChoice);
+        // Check if the current timestamp is after the question's deadline
+        let clock = Clock::get()?;
+        require!(clock.unix_timestamp > question.deadline, AppError::NotAfterDeadline);
 
         let ctx = CpiContext::new(
             self.token_program.to_account_info(),

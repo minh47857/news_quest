@@ -73,7 +73,6 @@ impl <'info> CreateQuest <'info> {
         question.deadline = deadline;
         question.reward_per_vote = reward_per_vote;
         question.total_votes = 0;
-        question.correct_choice = 0;
 
         dao_config.total_questions = dao_config
             .total_questions
