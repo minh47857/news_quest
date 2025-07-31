@@ -2,7 +2,7 @@ use anchor_lang::prelude::*;
 
 #[error_code]
 pub enum AppError {
-    #[msg("Invalid number of choices (must be between 2 and 10)")]
+    #[msg("Invalid number of choices")]
     InvalidChoices,
 
     #[msg("Question count overflow")]
@@ -17,9 +17,15 @@ pub enum AppError {
     #[msg("Question is not active")]
     QuestionInActive,
 
+    #[msg("User did not select the correct choice")]
+    NotCorrectChoice,
+
     #[msg("User has not voted yet")]
     NotVote,
 
     #[msg("Reward has already been claimed")]
     AlreadyClaimed,
+
+    #[msg("Reward cannot be claimed after the deadline")]
+    NotAfterDeadline,
 }

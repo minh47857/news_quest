@@ -3,7 +3,7 @@ use anchor_lang::prelude::*;
 use crate::{constant::{DAO_CONFIG_SEED, QUESTION_SEED}, error::AppError, Choice, DaoConfig, Question, QUESTION_SIZE};
 
 #[derive(Accounts)]
-#[instruction(question_id: u64)]
+#[instruction(id: u64)]
 pub struct CreateQuest<'info> {
     #[account(mut)]
     pub admin: Signer<'info>, 
@@ -23,7 +23,7 @@ pub struct CreateQuest<'info> {
         space = QUESTION_SIZE,
         seeds = [
             QUESTION_SEED,
-            question_id.to_le_bytes().as_ref(),
+            id.to_le_bytes().as_ref(),
         ],
         bump
     )]
@@ -73,7 +73,6 @@ impl <'info> CreateQuest <'info> {
         question.deadline = deadline;
         question.reward_per_vote = reward_per_vote;
         question.total_votes = 0;
-        question.correct_choice = 0;
 
         dao_config.total_questions = dao_config
             .total_questions

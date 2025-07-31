@@ -19,7 +19,6 @@ pub struct Question {
     pub deadline: i64, 
     pub reward_per_vote: u64,
     pub total_votes: u64,
-    pub correct_choice: u8, 
 }
 
 pub const QUESTION_SIZE: usize = 8 + // discriminator
@@ -31,5 +30,4 @@ pub const QUESTION_SIZE: usize = 8 + // discriminator
     1 + // is_active: bool
     8 + // deadline: i64
     8 + // reward_per_vote: u64
-    8 + // total_votes: u64
-    1; // correct_choice: u8
+    8; // total_votes: u64
