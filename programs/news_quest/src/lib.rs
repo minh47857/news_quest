@@ -1,4 +1,10 @@
 use anchor_lang::prelude::*;
+pub mod state;
+pub mod instructions;
+pub use state::*;
+pub use instructions::*;
+mod constant;
+mod error;
 
 declare_id!("5Whv2g9gDJZnj9nsh2DFgQS9KQek7PZT4CJZeGxB1RxY");
 
@@ -6,11 +12,24 @@ declare_id!("5Whv2g9gDJZnj9nsh2DFgQS9KQek7PZT4CJZeGxB1RxY");
 pub mod news_quest {
     use super::*;
 
-    pub fn initialize(ctx: Context<Initialize>) -> Result<()> {
-        msg!("Greetings from: {:?}", ctx.program_id);
-        Ok(())
+    pub fn create_quest(
+        ctx: Context<CreateQuest>, 
+        id: u64,
+        title: String,
+        image_uri: String,
+        choices: Vec<String>,
+        deadline: i64,
+        reward_per_vote: u64,
+    ) -> Result<()> {
+        ctx.accounts.process(id, title, image_uri, choices, deadline, reward_per_vote)
+    }
+
+    pub fn vote(ctx: Context<Vote>, _id: u64,  choice: u8) -> Result<()> {
+        ctx.accounts.process(choice)
+    }
+
+    pub fn claim_reward(ctx: Context<ClaimReward>, _id: u64) -> Result<()> {
+        ctx.accounts.process()
     }
 }
 
-#[derive(Accounts)]
-pub struct Initialize {}
