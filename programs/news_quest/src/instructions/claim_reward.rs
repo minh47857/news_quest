@@ -1,5 +1,5 @@
 use anchor_lang::prelude::*;
-use anchor_spl::token::{mint_to, Mint, MintTo, Token, TokenAccount};
+use anchor_spl::{associated_token::AssociatedToken, token::{mint_to, Mint, MintTo, Token, TokenAccount}};
 
 use crate::{
     error::AppError,
@@ -9,6 +9,12 @@ use crate::{
 #[derive(Accounts)]
 #[instruction(id: u64)]
 pub struct ClaimReward<'info> {
+    #[account(
+        mut,
+        constraint = admin.key() == dao_config.admin
+    )]
+    pub admin: Signer<'info>,
+
     #[account(mut)]
     pub user: Signer<'info>,
     
@@ -49,14 +55,16 @@ pub struct ClaimReward<'info> {
     pub token_mint: Account<'info, Mint>,
 
     #[account(
-        mut,
+        init_if_needed,
+        payer = user,
         associated_token::mint = token_mint,
         associated_token::authority = user,
-        
     )]
     pub user_token_account: Account<'info, TokenAccount>,
 
     pub token_program: Program<'info, Token>,
+    pub associated_token_program: Program<'info, AssociatedToken>,
+    pub system_program: Program<'info, System>,
 }
 
 impl <'info> ClaimReward <'info> {
@@ -76,7 +84,7 @@ impl <'info> ClaimReward <'info> {
             MintTo {
                 mint: self.token_mint.to_account_info(),
                 to: self.user_token_account.to_account_info(),
-                authority: self.dao_config.to_account_info(),
+                authority: self.admin.to_account_info(),
             },
         );
 

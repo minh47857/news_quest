@@ -6,7 +6,7 @@ pub use instructions::*;
 mod constant;
 mod error;
 
-declare_id!("6LWu2MDNZyBkkJ2gr6KL2hPqkRmDUac6VNNuw4TCdKEX");
+declare_id!("5Whv2g9gDJZnj9nsh2DFgQS9KQek7PZT4CJZeGxB1RxY");
 
 #[program]
 pub mod news_quest {
