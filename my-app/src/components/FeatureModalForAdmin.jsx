@@ -4,6 +4,7 @@ import CreateQuest from "./AdminFeatures/CreateQuest";
 import EndQuest from "./AdminFeatures/EndQuest";
 import ViewQuestion from "./AdminFeatures/ViewQuestion";
 import ViewTotalVotes from "./AdminFeatures/ViewTotalVotes";
+import ViewAllActiveQuestions from "./AdminFeatures/ViewAllActiveQuestions";
 
 const FeatureModalForAdmin = ({ featureId, onClose }) => {
   const renderFeatureContent = () => {
@@ -16,8 +17,10 @@ const FeatureModalForAdmin = ({ featureId, onClose }) => {
         return <ViewQuestion />;
       case "viewTotalVotes":
         return <ViewTotalVotes />;
+      case "viewAllActiveQuestions":
+        return <ViewAllActiveQuestions />;
       default:
-        return <p>Chức năng không xác định.</p>;
+        return <p>Unknown feature.</p>;
     }
   };
 
@@ -25,7 +28,7 @@ const FeatureModalForAdmin = ({ featureId, onClose }) => {
     <Modal isOpen={true} onClose={onClose} isCentered>
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>Chi tiết Tính Năng</ModalHeader>
+        <ModalHeader>Feature Details</ModalHeader>
         <ModalCloseButton />
         <ModalBody>{renderFeatureContent()}</ModalBody>
       </ModalContent>

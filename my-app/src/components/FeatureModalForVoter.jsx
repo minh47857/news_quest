@@ -2,7 +2,8 @@ import React from "react";
 import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton} from "@chakra-ui/react";
 import VoteQuestion from "./VoterFeatures/VoteQuestion";
 import ClaimReward from "./VoterFeatures/ClaimReward";
-import ViewQuestion from "./AdminFeatures/ViewQuestion";
+import ViewQuestion from "./VoterFeatures/ViewQuestion";
+import ViewAllActiveQuestions from "./VoterFeatures/ViewAllActiveQuestions";
 
 const FeatureModalForVoter = ({ featureId, onClose }) => {
   const renderFeatureContent = () => {
@@ -13,8 +14,10 @@ const FeatureModalForVoter = ({ featureId, onClose }) => {
         return <ClaimReward />;
       case "viewQuestion":
         return <ViewQuestion />;
+      case "viewAllActiveQuestions":
+        return <ViewAllActiveQuestions />;
       default:
-        return <p>Chức năng không xác định.</p>;
+        return <p>Unknown feature.</p>;
     }
   };
 
@@ -22,7 +25,7 @@ const FeatureModalForVoter = ({ featureId, onClose }) => {
     <Modal isOpen={true} onClose={onClose} isCentered>
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>Chi tiết Tính Năng</ModalHeader>
+        <ModalHeader>Feature Details</ModalHeader>
         <ModalCloseButton />
         <ModalBody>{renderFeatureContent()}</ModalBody>
       </ModalContent>
