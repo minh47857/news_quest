@@ -69,6 +69,7 @@ impl <'info> ClaimReward <'info> {
 
         // Check if the current timestamp is after the question's deadline
         let clock = Clock::get()?;
+
         require!(clock.unix_timestamp > question.deadline, AppError::NotAfterDeadline);
 
         let ctx = CpiContext::new(
