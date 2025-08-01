@@ -20,11 +20,21 @@ const ClaimReward = () => {
         throw new Error("Please install Phantom Wallet.");
       }
 
-      const provider = new AnchorProvider(
-        new web3.Connection("https://api.devnet.solana.com"),
-        window.solana,
-        { preflightCommitment: "processed" }
-      );
+      await window.solana.connect();
+
+      const connection = new web3.Connection("https://api.devnet.solana.com");
+
+      const wallet = {
+        publicKey: window.solana.publicKey,
+        signTransaction: window.solana.signTransaction.bind(window.solana),
+        signAllTransactions: window.solana.signAllTransactions.bind(window.solana),
+      };
+
+      const provider = new AnchorProvider(connection, wallet, {
+        preflightCommitment: "processed",
+      });
+
+
 
       if (typeof window !== "undefined") {
         window.Buffer = Buffer;
@@ -66,7 +76,7 @@ const ClaimReward = () => {
         ASSOCIATED_TOKEN_PROGRAM_ID
       );
 
-
+      console.log("user:", user.toBase58());
       await program.methods
         .claimReward(new BN(id))
         .accounts({
