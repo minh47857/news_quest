@@ -209,9 +209,6 @@ const ViewAllActiveQuestions = () => {
                               </Text>{" "}
                               {choice.description}
                             </Text>
-                            <Badge colorScheme="purple" ml={2}>
-                              {choice.totalVotes} votes
-                            </Badge>
                           </Box>
                         </ListItem>
                       ))}
