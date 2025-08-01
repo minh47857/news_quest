@@ -32,7 +32,7 @@ describe("news_quest", () => {
     )[0];
 
     rewardMint = await createMint(provider.connection, payer.payer, payer.publicKey, null, 9);
-    const tokenAccount = await getOrCreateAssociatedTokenAccount(
+    let tokenAccount = await getOrCreateAssociatedTokenAccount(
       provider.connection,
       payer.payer,
       rewardMint,
@@ -43,13 +43,21 @@ describe("news_quest", () => {
     try {
       const daoConfigState = await program.account.daoConfig.fetch(daoConfig);
       console.log("dao_config đã tồn tại:", daoConfigState);
+      rewardMint = daoConfigState.rewardMint;
+      let tokenAccount = await getOrCreateAssociatedTokenAccount(
+        provider.connection,
+        payer.payer,
+        rewardMint,
+        payer.publicKey
+      );
+      rewardToken = tokenAccount.address;
       questionId = new anchor.BN(daoConfigState.totalQuestions.toNumber());
     } catch (err) {
       await program.methods
         .initialize(rewardMint)
         .accounts({
           admin: payer.publicKey,
-          daoConfig,
+          daoConfig: daoConfig,
           systemProgram: anchor.web3.SystemProgram.programId,
         })
         .signers([payer.payer])
@@ -82,13 +90,10 @@ describe("news_quest", () => {
       const tx = await program.methods
         .createQuest(questionId, title, imageUri, choices, new anchor.BN(deadline), rewardPerVote)
         .accounts({
-          payer: payer.publicKey,
+          admin: payer.publicKey,
+          daoConfig: daoConfig,
           question: questionPDA,
-          daoConfig,
-          rewardMint,
-          rewardToken,
           systemProgram: anchor.web3.SystemProgram.programId,
-          tokenProgram: TOKEN_PROGRAM_ID,
           rent: anchor.web3.SYSVAR_RENT_PUBKEY,
         })
         .signers([payer.payer])
@@ -126,7 +131,7 @@ describe("news_quest", () => {
     const txCreate = await program.methods
       .createQuest(questionId, title, imageUri, choices, new anchor.BN(deadline), rewardPerVote)
       .accounts({
-        payer: payer.publicKey,
+        admin: payer.publicKey,
         question: questionPDA,
         daoConfig,
         rewardMint,
@@ -177,4 +182,112 @@ describe("news_quest", () => {
       assert.include(errStr, "Unauthorized", "Không đúng lỗi do không phải admin");
     }
   });
+
+  it("Vote on Quest", async () => {
+    const originalQuestionId = new anchor.BN(0); 
+    const originalQuestionPDA = PublicKey.findProgramAddressSync(
+      [Buffer.from("question"), originalQuestionId.toArrayLike(Buffer, "le", 8)],
+      program.programId
+    )[0];
+    
+    const choice = 1; 
+      
+    const voteRecordPDA = PublicKey.findProgramAddressSync(
+      [
+        Buffer.from("vote_record"),
+        payer.publicKey.toBuffer(),
+        originalQuestionId.toArrayLike(Buffer, "le", 8)
+      ],
+      program.programId
+    )[0];
+
+    const questionBefore = await program.account.question.fetch(originalQuestionPDA);
+    assert.isTrue(questionBefore.isActive, "Question phải active để vote");
+
+    await program.methods
+      .vote(originalQuestionId, choice)
+      .accounts({
+        user: payer.publicKey,
+        question: originalQuestionPDA,
+        voteRecord: voteRecordPDA,
+        systemProgram: anchor.web3.SystemProgram.programId,
+      })
+      .signers([payer.payer])
+      .rpc();
+
+    const voteRecord = await program.account.voteRecord.fetch(voteRecordPDA);
+    assert.equal(voteRecord.choice, choice, "Choice không đúng");
+    assert.isTrue(voteRecord.hasVoted, "hasVoted phải là true");
+    assert.isFalse(voteRecord.claimed, "claimed phải là false");
+
+    const questionAfter = await program.account.question.fetch(originalQuestionPDA);
+    assert.equal(
+      questionAfter.totalVotes.toNumber(), 
+      questionBefore.totalVotes.toNumber() + 1, 
+      "Total votes phải tăng 1"
+    );
+    assert.equal(
+      questionAfter.choices[choice].totalVotes,
+      questionBefore.choices[choice].totalVotes + 1,
+      "Choice votes phải tăng 1"
+    );
+  });
+
+  it("claim reward", async () => {
+    const daoConfigState = await program.account.daoConfig.fetch(daoConfig);
+    const questionId = daoConfigState.totalQuestions
+    const title = "What is your favorite color?";
+    const imageUri = "https://example.com/image.png";
+    const choices = ["Red", "Blue", "Green"];
+    const deadline = Math.floor(Date.now() / 1000) + 5;
+    const rewardPerVote = new anchor.BN(100);
+    await program.methods
+      .createQuest(questionId, title, imageUri, choices, new anchor.BN(deadline), rewardPerVote)
+      .accounts({
+        admin: payer.publicKey,
+      })
+      .signers([payer.payer])
+      .rpc();
+
+    const choice = 2;
+
+    await program.methods
+      .vote(questionId, choice)
+      .accounts({
+        user: payer.publicKey,
+        // question: originalQuestionPDA,
+        // voteRecord: voteRecordPDA,
+        // systemProgram: anchor.web3.SystemProgram.programId, 
+      })
+      .signers([payer.payer])
+      .rpc();
+
+    try {
+      await program.methods
+        .claimReward(questionId)
+        .accounts({
+          user: payer.publicKey,
+        })
+        .signers([payer.payer])
+        .rpc();
+    } catch (err) {
+      console.log("khong the claim reward duoc do chua du thoi gian");
+      console.log(err)
+    }
+
+    await new Promise(resolve => setTimeout(resolve, 5000));
+
+    const tx = await program.methods
+      .claimReward(questionId)
+      .accounts({
+        admin: payer.publicKey,
+        user: payer.publicKey,
+        tokenMint: rewardMint,
+      })
+      .signers([payer.payer])
+      .rpc();
+
+    console.log(tx);
+  })
+
 });
