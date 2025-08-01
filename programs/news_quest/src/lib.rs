@@ -39,4 +39,3 @@ pub mod news_quest {
         ctx.accounts.process()
     }
 }
-

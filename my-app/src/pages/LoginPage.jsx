@@ -2,7 +2,17 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import { Box, Button, Heading, Text, Spinner, Alert, AlertIcon, VStack } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Heading,
+  Text,
+  Spinner,
+  Alert,
+  AlertIcon,
+  VStack,
+  Input,
+} from "@chakra-ui/react";
 
 let accountAddress = "";
 
@@ -10,9 +20,9 @@ function LoginPage() {
   const [currentAccount, setCurrentAccount] = useState(null);
   const [isConnecting, setIsConnecting] = useState(false);
   const [error, setError] = useState("");
+  const [roleInput, setRoleInput] = useState(""); // input cho user nhập vai trò
   const navigate = useNavigate();
 
-  // Hàm kết nối Phantom Wallet
   const connectWallet = async () => {
     setError("");
     setIsConnecting(true);
@@ -20,22 +30,32 @@ function LoginPage() {
     try {
       const provider = window.solana;
       if (!provider || !provider.isPhantom) {
-        setError("Vui lòng cài đặt Phantom Wallet để tiếp tục.");
+        setError("Need to install Phantom Wallet.");
         return;
       }
 
       const resp = await provider.connect();
-      setCurrentAccount(resp.publicKey.toString());
-      accountAddress = resp.publicKey.toString();
+      const publicKey = resp.publicKey.toString();
+      setCurrentAccount(publicKey);
+      accountAddress = publicKey;
     } catch (err) {
-      console.error("Lỗi khi kết nối Phantom:", err);
-      setError("Không thể kết nối với Phantom Wallet.");
+      console.error("Error connecting to Phantom:", err);
+      setError("Unable to connect to Phantom Wallet.");
     } finally {
       setIsConnecting(false);
     }
   };
 
-  // Lắng nghe thay đổi tài khoản Phantom
+  const checkUserRole = () => {
+    if (roleInput === "0") {
+      navigate("/voter");
+    } else if (roleInput === "1") {
+      navigate("/admin");
+    } else {
+      setError("Please enter 0 (voter) or 1 (admin).");
+    }
+  };
+
   useEffect(() => {
     const provider = window.solana;
     if (!provider || !provider.isPhantom) return;
@@ -48,7 +68,7 @@ function LoginPage() {
     const handleDisconnect = () => {
       setCurrentAccount(null);
       accountAddress = "";
-      setError("Bạn đã ngắt kết nối ví.");
+      setError("You have disconnected your wallet.");
     };
 
     provider.on("connect", handleConnect);
@@ -66,7 +86,7 @@ function LoginPage() {
       <Box as="main" flex="1" display="flex" alignItems="center" justifyContent="center" p={8} bg="gray.100">
         <Box bg="white" p={8} borderRadius="lg" boxShadow="lg" width="400px" textAlign="center">
           <Heading mb={6} color="teal.500">
-            Trang Đăng Nhập
+            Login Page
           </Heading>
           <VStack spacing={4}>
             {error && (
@@ -77,15 +97,21 @@ function LoginPage() {
             )}
             {!currentAccount ? (
               <Button colorScheme="teal" onClick={connectWallet} width="100%" isLoading={isConnecting}>
-                Kết Nối Ví Phantom
+                Connect Phantom Wallet
               </Button>
             ) : (
-              <Box>
-                <Text mb={4} fontSize="md">
-                  Địa chỉ ví: {currentAccount}
+              <Box width="100%">
+                <Text mb={2} fontSize="md">
+                  Wallet Address: {currentAccount}
                 </Text>
-                <Button colorScheme="teal" onClick={() => navigate("/dashboard")} width="100%">
-                  Đi tới Trang Dashboard
+                <Input
+                  placeholder="Enter 0 (voter) or 1 (admin)"
+                  value={roleInput}
+                  onChange={(e) => setRoleInput(e.target.value)}
+                  mb={2}
+                />
+                <Button colorScheme="teal" onClick={checkUserRole} width="100%">
+                  Continue
                 </Button>
               </Box>
             )}
