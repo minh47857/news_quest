@@ -20,7 +20,7 @@ function LoginPage() {
     try {
       const provider = window.solana;
       if (!provider || !provider.isPhantom) {
-        setError("Vui lòng cài đặt Phantom Wallet để tiếp tục.");
+        setError("Need to install Phantom Wallet.");
         return;
       }
 
@@ -28,8 +28,8 @@ function LoginPage() {
       setCurrentAccount(resp.publicKey.toString());
       accountAddress = resp.publicKey.toString();
     } catch (err) {
-      console.error("Lỗi khi kết nối Phantom:", err);
-      setError("Không thể kết nối với Phantom Wallet.");
+      console.error("Error connecting to Phantom:", err);
+      setError("Unable to connect to Phantom Wallet.");
     } finally {
       setIsConnecting(false);
     }
@@ -48,7 +48,7 @@ function LoginPage() {
     const handleDisconnect = () => {
       setCurrentAccount(null);
       accountAddress = "";
-      setError("Bạn đã ngắt kết nối ví.");
+      setError("You have disconnected your wallet.");
     };
 
     provider.on("connect", handleConnect);
@@ -66,7 +66,7 @@ function LoginPage() {
       <Box as="main" flex="1" display="flex" alignItems="center" justifyContent="center" p={8} bg="gray.100">
         <Box bg="white" p={8} borderRadius="lg" boxShadow="lg" width="400px" textAlign="center">
           <Heading mb={6} color="teal.500">
-            Trang Đăng Nhập
+            Login Page
           </Heading>
           <VStack spacing={4}>
             {error && (
@@ -77,15 +77,15 @@ function LoginPage() {
             )}
             {!currentAccount ? (
               <Button colorScheme="teal" onClick={connectWallet} width="100%" isLoading={isConnecting}>
-                Kết Nối Ví Phantom
+                Connect Phantom Wallet
               </Button>
             ) : (
               <Box>
                 <Text mb={4} fontSize="md">
-                  Địa chỉ ví: {currentAccount}
+                  Wallet Address: {currentAccount}
                 </Text>
                 <Button colorScheme="teal" onClick={() => navigate("/dashboard")} width="100%">
-                  Đi tới Trang Dashboard
+                  Go to Dashboard
                 </Button>
               </Box>
             )}
