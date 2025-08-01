@@ -6,8 +6,12 @@
   },
   "dependencies": {
     "@coral-xyz/anchor": "^0.31.1",
+    "@google/generative-ai": "^0.24.1",
     "@solana/spl-token": "^0.4.13",
-    "dotenv": "^17.2.1"
+    "dotenv": "^17.2.1",
+    "express": "^5.1.0",
+    "newsapi": "^2.4.1",
+    "node-fetch": "^3.3.2"
   },
   "devDependencies": {
     "@types/bn.js": "^5.1.0",
