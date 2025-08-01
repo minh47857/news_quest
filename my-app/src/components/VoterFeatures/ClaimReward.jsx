@@ -1,5 +1,108 @@
 import React, { useState } from "react";
 import { Input, Button, VStack, useToast, Heading, Box } from "@chakra-ui/react";
-const ViewResult = () => {
+import { PublicKey } from "@solana/web3.js";
+import { Program, AnchorProvider, web3 } from "@project-serum/anchor";
+import idl from "../../idl/news_quest.json"; 
+
+const ClaimReward = () => {
+  const [questId, setQuestId] = useState("");
+  const toast = useToast();
+
+  const handleClaim = async () => {
+    try {
+      if (!window.solana || !window.solana.isPhantom) {
+        throw new Error("Please install Phantom Wallet.");
+      }
+
+      const provider = new AnchorProvider(
+        new web3.Connection("https://api.devnet.solana.com"),
+        window.solana,
+        { preflightCommitment: "processed" }
+      );
+
+      const programId = new PublicKey("5Whv2g9gDJZnj9nsh2DFgQS9KQek7PZT4CJZeGxB1RxY");
+      const program = new Program(idl, provider);
+      const user = provider.wallet.publicKey;
+      const id = parseInt(questId);
+
+      const [daoConfigPda] = await PublicKey.findProgramAddressSync(
+        [Buffer.from("dao_config")],
+        program.programId
+      );
+
+      const [questionPda] = await PublicKey.findProgramAddressSync(
+        [Buffer.from("question"), new BN(id).toArrayLike(Buffer, "le", 8)],
+        program.programId
+      );
+
+      const [voteRecordPda] = await PublicKey.findProgramAddressSync(
+        [
+          Buffer.from("vote_record"),
+          user.toBuffer(),
+          new BN(id).toArrayLike(Buffer, "le", 8),
+        ],
+        program.programId
+      );
+
+      const daoConfig = await program.account.daoConfig.fetch(daoConfigPda);
+      const rewardMint = daoConfig.rewardMint;
+
+      const ata = await PublicKey.findProgramAddressSync(
+        [
+          user.toBuffer(),
+          Token.TOKEN_PROGRAM_ID.toBuffer(),
+          rewardMint.toBuffer(),
+        ],
+        Token.ASSOCIATED_PROGRAM_ID
+      );
+
+      await program.methods
+        .claimReward(new BN(id))
+        .accounts({
+          user,
+          daoConfig: daoConfigPda,
+          question: questionPda,
+          voteRecord: voteRecordPda,
+          tokenMint: rewardMint,
+          userTokenAccount: ata[0],
+          tokenProgram: Token.TOKEN_PROGRAM_ID,
+        })
+        .rpc();
+
+      toast({
+        title: "Success",
+        description: "Reward claimed successfully!",
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+      });
+    } catch (err) {
+      console.error("Claim Reward Error:", err);
+      toast({
+        title: "Error",
+        description: err.message,
+        status: "error",
+        duration: 4000,
+        isClosable: true,
+      });
+    }
+  };
+
+  return (
+    <Box p={8}>
+      <Heading mb={4}>Claim Phần Thưởng</Heading>
+      <VStack spacing={4}>
+        <Input
+          placeholder="Nhập quest ID"
+          value={questId}
+          onChange={(e) => setQuestId(e.target.value)}
+        />
+        <Button colorScheme="blue" onClick={handleClaim}>
+          Claim Reward
+        </Button>
+      </VStack>
+    </Box>
+  );
 };
-export default ViewResult;
+
+export default ClaimReward;
