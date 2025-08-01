@@ -16,8 +16,9 @@ import {
 import { Connection, PublicKey } from "@solana/web3.js";
 import { AnchorProvider, Program } from "@coral-xyz/anchor";
 import idl from "../idl/news_quest.json";
+import { Buffer } from "buffer";
 
-const programId = new PublicKey("6LWu2MDNZyBkkJ2gr6KL2hPqkRmDUac6VNNuw4TCdKEX");
+const programId = new PublicKey("5Whv2g9gDJZnj9nsh2DFgQS9KQek7PZT4CJZeGxB1RxY");
 
 let accountAddress = "";
 
@@ -52,28 +53,50 @@ function LoginPage() {
     }
   };
 
+  function deserializeDaoConfig(data) {
+    let offset = 8; // Skip Anchor discriminator
+
+    const admin = new PublicKey(data.slice(offset, offset + 32));
+    offset += 32;
+
+    const total_questions = data.readBigUInt64LE(offset);
+    offset += 8;
+
+    const reward_mint = new PublicKey(data.slice(offset, offset + 32));
+
+    return {
+      admin: admin.toBase58(),
+      total_questions: Number(total_questions),
+      reward_mint: reward_mint.toBase58(),
+    };
+  }
+
+  async function getDaoConfig() {
+    const connection = new Connection("https://api.devnet.solana.com", "confirmed");
+
+    const [daoConfigPda] = await PublicKey.findProgramAddressSync(
+      [Buffer.from("dao_config")],
+      programId
+    );
+
+    const accountInfo = await connection.getAccountInfo(daoConfigPda);
+    if (!accountInfo) throw new Error("DaoConfig not found");
+
+    const daoConfig = deserializeDaoConfig(accountInfo.data);
+    return daoConfig;
+  }
+
   const fetchUserRole = async () => {
   setLoadingRole(true);
   try {
-    const connection = new Connection("https://api.devnet.solana.com");
-    const provider = new AnchorProvider(connection, window.solana, {});
-    const program = new Program(idl, programId, provider);
+    const daoConfig = await getDaoConfig(); // dùng hàm thủ công của bạn
+    console.log("Admin in daoConfig:", daoConfig.admin);
 
-    const daoConfig = PublicKey.findProgramAddressSync(
-      [Buffer.from("dao_config")], 
-      program.programId
-    )[0];
-
-    const daoConfigData = await program.account.daoConfig.fetch(daoConfig);
-    console.log("admin:", daoConfigData.admin.toString());
-    
-    if (daoConfigData.admin.toString() === currentAccount.toString()) {
+    if (daoConfig.admin === currentAccount) {
       setUserRole("admin");
     } else {
       setUserRole("voter");
     }
-
-    
   } catch (err) {
     console.warn("Failed to fetch daoConfig:", err);
     setError("Failed to fetch user role.");
@@ -110,6 +133,7 @@ function LoginPage() {
 
   useEffect(() => {
     if (currentAccount) {
+      console.log("CurrentAccount:", currentAccount);
       fetchUserRole();
     }
   }, [currentAccount]);
