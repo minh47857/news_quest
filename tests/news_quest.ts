@@ -36,15 +36,18 @@ describe("news_quest", () => {
       provider.connection,
       payer.payer,
       rewardMint,
-      payer.publicKey
+      payer.publicKey,
+      true // force creation
     );
     rewardToken = tokenAccount.address;
 
+    // Kiểm tra xem dao_config đã tồn tại chưa
     try {
       const daoConfigState = await program.account.daoConfig.fetch(daoConfig);
       console.log("dao_config đã tồn tại:", daoConfigState);
       questionId = new anchor.BN(daoConfigState.totalQuestions.toNumber());
     } catch (err) {
+      // Nếu chưa tồn tại, khởi tạo dao_config
       await program.methods
         .initialize(rewardMint)
         .accounts({
@@ -57,6 +60,7 @@ describe("news_quest", () => {
       console.log("Initialized dao_config");
     }
 
+    // Cập nhật questionPDA dựa trên questionId
     questionPDA = PublicKey.findProgramAddressSync(
       [Buffer.from("question"), questionId.toArrayLike(Buffer, "le", 8)],
       program.programId
@@ -66,7 +70,7 @@ describe("news_quest", () => {
   it("Initialize DAO Config", async () => {
     const daoConfigState = await program.account.daoConfig.fetch(daoConfig);
     assert.equal(daoConfigState.admin.toString(), payer.publicKey.toString(), "Admin không đúng");
-    // assert.equal(daoConfigState.rewardMint.toString(), rewardMint.toString(), "Reward mint không đúng");
+    assert.equal(daoConfigState.rewardMint.toString(), rewardMint.toString(), "Reward mint không đúng");
   });
 
   it("Create Quest", async () => {
@@ -75,6 +79,8 @@ describe("news_quest", () => {
     const choices = ["Red", "Blue", "Green"];
     const deadline = Math.floor(Date.now() / 1000) + 3600;
     const rewardPerVote = new anchor.BN(100);
+
+    // Kiểm tra xem câu hỏi đã tồn tại chưa
     try {
       await program.account.question.fetch(questionPDA);
       console.log("Question đã tồn tại, bỏ qua tạo mới");
