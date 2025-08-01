@@ -136,7 +136,7 @@ const ViewQuestion = () => {
   const formatDeadline = (timestamp) => {
     const date = new Date(timestamp * 1000);
     const now = new Date();
-    const isExpired = date > now;
+    const isExpired = date < now;
     return {
       formatted: date.toLocaleString('en-US'),
       isExpired
