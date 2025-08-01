@@ -72,6 +72,5 @@ export async function fetchNewsPolls(
       await sleep(4000);
     }
   }
-
   return output;
 }
