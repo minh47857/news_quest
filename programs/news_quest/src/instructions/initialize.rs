@@ -5,12 +5,12 @@ use crate::{constant::DAO_CONFIG_SEED, DaoConfig, DAO_CONFIG_SIZE};
 #[derive(Accounts)]
 pub struct Initialize<'info> {
     #[account(mut)]
-    pub admin: Signer<'info>,
+    pub addr: Signer<'info>,
 
     #[account(
         init,
         space = DAO_CONFIG_SIZE,
-        payer = admin,
+        payer = addr,
         seeds = [
             DAO_CONFIG_SEED,
         ],
@@ -22,11 +22,12 @@ pub struct Initialize<'info> {
 }
 
 impl <'info> Initialize <'info> {
-    pub fn initialize(&mut self, reward_mint: Pubkey) -> Result<()> {
+    pub fn initialize(&mut self, reward_mint: Pubkey, is_admin: bool) -> Result<()> {
         let dao_config = &mut self.dao_config;
 
-        dao_config.admin = self.admin.key();
+        dao_config.addr = self.addr.key();
         dao_config.reward_mint = reward_mint;
+        dao_config.is_admin = is_admin;
 
         Ok(())
     }
