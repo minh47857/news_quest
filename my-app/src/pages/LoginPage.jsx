@@ -7,12 +7,12 @@ import { Box, Button, Heading, Text, Spinner, Alert, AlertIcon, VStack } from "@
 let accountAddress = "";
 
 function LoginPage() {
+    /* add logic */
   const [currentAccount, setCurrentAccount] = useState(null);
   const [isConnecting, setIsConnecting] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  // Hàm kết nối Phantom Wallet
   const connectWallet = async () => {
     setError("");
     setIsConnecting(true);
