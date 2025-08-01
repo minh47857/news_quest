@@ -53,29 +53,34 @@ function LoginPage() {
   };
 
   const fetchUserRole = async () => {
-    setLoadingRole(true);
-    try {
-      const connection = new Connection("https://api.devnet.solana.com");
-      const provider = new AnchorProvider(connection, window.solana, {});
-      const program = new Program(idl, programId, provider);
+  setLoadingRole(true);
+  try {
+    const connection = new Connection("https://api.devnet.solana.com");
+    const provider = new AnchorProvider(connection, window.solana, {});
+    const program = new Program(idl, programId, provider);
 
-      const [voteRecordPDA] = PublicKey.findProgramAddressSync(
-        [
-          Buffer.from("vote-record"),
-          new PublicKey(currentAccount).toBuffer(),
-        ],
-        program.programId
-      );
+    const daoConfig = PublicKey.findProgramAddressSync(
+      [Buffer.from("dao_config")], 
+      program.programId
+    )[0];
 
-      const voteRecord = await program.account.voteRecord.fetch(voteRecordPDA);
-      setUserRole(voteRecord.choice === 1 ? "admin" : "voter");
-    } catch (err) {
-      console.warn("Vote record not found or failed to fetch:", err);
-      setUserRole("voter"); 
-    } finally {
-      setLoadingRole(false);
+    const daoConfigData = await program.account.daoConfig.fetch(daoConfig);
+    console.log("admin:", daoConfigData.admin.toString());
+    
+    if (daoConfigData.admin.toString() === currentAccount.toString()) {
+      setUserRole("admin");
+    } else {
+      setUserRole("voter");
     }
-  };
+
+    
+  } catch (err) {
+    console.warn("Failed to fetch daoConfig:", err);
+    setError("Failed to fetch user role.");
+  } finally {
+    setLoadingRole(false);
+  }
+};
 
   useEffect(() => {
     const provider = window.solana;
