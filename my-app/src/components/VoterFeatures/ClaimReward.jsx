@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import { Input, Button, VStack, useToast, Heading, Box } from "@chakra-ui/react";
-import { PublicKey } from "@solana/web3.js";
+import { Keypair, PublicKey } from "@solana/web3.js";
 import { Program, AnchorProvider, web3 } from "@coral-xyz/anchor";
 import idl from "../../idl/news_quest.json";
 import { BN } from "bn.js";
 import { Buffer } from "buffer";
+import { bs58 } from "@coral-xyz/anchor/dist/cjs/utils/bytes";
 
 
 const ClaimReward = () => {
@@ -35,13 +36,26 @@ const ClaimReward = () => {
       });
 
 
-
       if (typeof window !== "undefined") {
         window.Buffer = Buffer;
       }
 
-      const programId = new PublicKey("5Whv2g9gDJZnj9nsh2DFgQS9KQek7PZT4CJZeGxB1RxY");
-      const program = new Program(idl, provider);
+      const ADMINS_SECRET_KEY = "ß";
+
+      const ADMIN = Keypair.fromSecretKey(
+        bs58.decode(ADMINS_SECRET_KEY)
+      );
+
+      // const connection = new web3.Connection("https://api.devnet.solana.com", "confirmed");
+      const adminProvider = new AnchorProvider(
+        connection,
+        { publicKey: ADMIN.publicKey, signTransaction: tx => ADMIN.signTransaction(tx), signAllTransactions: txs => ADMIN.signAllTransactions(txs) },
+        { preflightCommitment: "confirmed" }
+      );
+
+
+      // const programId = new PublicKey("5Whv2g9gDJZnj9nsh2DFgQS9KQek7PZT4CJZeGxB1RxY");
+      const program = new Program(idl, adminProvider);
       const user = provider.wallet.publicKey;
       const id = parseInt(questId);
 
@@ -80,6 +94,7 @@ const ClaimReward = () => {
       await program.methods
         .claimReward(new BN(id))
         .accounts({
+          admin: ADMIN.publicKey,
           user,
           daoConfig: daoConfigPda,
           question: questionPda,
