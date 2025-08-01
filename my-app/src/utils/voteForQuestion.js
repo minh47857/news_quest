@@ -31,7 +31,7 @@ async function voteForQuestion(questionIdRaw, choice) {
       signAllTransactions: provider.signAllTransactions,
     };
     const anchorProvider = new AnchorProvider(connection, wallet, { commitment: "confirmed" });
-    const programId = new PublicKey("6LWu2MDNZyBkkJ2gr6KL2hPqkRmDUac6VNNuw4TCdKEX");
+    const programId = new PublicKey("5Whv2g9gDJZnj9nsh2DFgQS9KQek7PZT4CJZeGxB1RxY");
     const program = new Program(idl,anchorProvider);
     const questionId = new BN(questionIdRaw);
     const questionPDA = getQuestionPDA(questionId, programId);

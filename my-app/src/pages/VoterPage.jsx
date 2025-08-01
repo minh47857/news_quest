@@ -12,7 +12,6 @@ const VoterPage = () => {
     { id: "voteQuestion", label: "VOTE FOR QUEST", icon: <FaVoteYea /> },
     { id: "claimReward", label: "CLAIM REWARD", icon: <FaVoteYea /> },
     { id: "viewQuestion", label: "VIEW QUEST DETAILS", icon: <FaInfoCircle /> },
-    { id: "viewAllActiveQuestions", label: "VIEW ALL ACTIVE QUESTS", icon: <FaInfoCircle /> },
   ];
 
   return (

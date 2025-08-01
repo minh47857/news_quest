@@ -59,7 +59,7 @@ function deserializeQuestion(data) {
 }
 async function viewQuestionAdmin(questionId) {
   const connection = new Connection("https://api.devnet.solana.com", "confirmed");
-  const programId = new PublicKey("6LWu2MDNZyBkkJ2gr6KL2hPqkRmDUac6VNNuw4TCdKEX");
+  const programId = new PublicKey("5Whv2g9gDJZnj9nsh2DFgQS9KQek7PZT4CJZeGxB1RxY");
   const questionPda = await getQuestionPda(programId, questionId);
   const accountInfo = await connection.getAccountInfo(questionPda);
   if (!accountInfo) {

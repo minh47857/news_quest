@@ -3,7 +3,6 @@ import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseBu
 import VoteQuestion from "./VoterFeatures/VoteQuestion";
 import ClaimReward from "./VoterFeatures/ClaimReward";
 import ViewQuestion from "./VoterFeatures/ViewQuestion";
-import ViewAllActiveQuestions from "./VoterFeatures/ViewAllActiveQuestions";
 
 const FeatureModalForVoter = ({ featureId, onClose }) => {
   const renderFeatureContent = () => {
@@ -14,20 +13,18 @@ const FeatureModalForVoter = ({ featureId, onClose }) => {
         return <ClaimReward />;
       case "viewQuestion":
         return <ViewQuestion />;
-      case "viewAllActiveQuestions":
-        return <ViewAllActiveQuestions />;
       default:
         return <p>Unknown feature.</p>;
     }
   };
 
   return (
-    <Modal isOpen={true} onClose={onClose} isCentered>
+    <Modal isOpen={true} onClose={onClose} isCentered size="6xl">
       <ModalOverlay />
-      <ModalContent>
+      <ModalContent maxW="90vw" minH="80vh">
         <ModalHeader>Feature Details</ModalHeader>
         <ModalCloseButton />
-        <ModalBody>{renderFeatureContent()}</ModalBody>
+        <ModalBody p={6}>{renderFeatureContent()}</ModalBody>
       </ModalContent>
     </Modal>
   );
