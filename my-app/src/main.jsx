@@ -6,6 +6,8 @@ import { ChakraProvider } from '@chakra-ui/react';
 import LoginPage from './pages/LoginPage';
 import AdminPage from './pages/AdminPage';
 import VoterPage from './pages/VoterPage';
+import { Buffer } from 'buffer';
+window.Buffer = Buffer;
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
