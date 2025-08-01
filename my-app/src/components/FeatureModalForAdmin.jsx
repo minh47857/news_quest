@@ -11,8 +11,6 @@ const FeatureModalForAdmin = ({ featureId, onClose }) => {
     switch (featureId) {
       case "createQuest":
         return <CreateQuest />;
-      case "endQuest":
-        return <EndQuest />;
       case "viewQuestion":
         return <ViewQuestion />;
       case "viewAllActiveQuestions":

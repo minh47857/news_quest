@@ -26,8 +26,7 @@ import { Connection, PublicKey } from "@solana/web3.js";
 import * as anchor from "@coral-xyz/anchor";
 import NewsQuestProgram from "../../utils/NewsQuestProgram";
 import { accountAddress } from "../../pages/LoginPage";
-
-import { fetchNewsPolls } from "../../../../backend/getData.ts";
+import { fetchNewsPolls } from "../../utils/fetchNewsPolls.js";
 
 const CreateQuest = () => {
   const [title, setTitle] = useState("");
@@ -48,9 +47,9 @@ const CreateQuest = () => {
 
   // Fetch news polls từ API
   const fetchAndSetNewsPolls = async () => {
-    const data = await fetchNewsPolls();
     setIsLoadingAI(true);
     try {
+      const data = await fetchNewsPolls();
       setNewsPolls(data);
       toast({
         title: "Success",
