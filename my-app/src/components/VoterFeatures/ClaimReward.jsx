@@ -2,11 +2,15 @@ import React, { useState } from "react";
 import { Input, Button, VStack, useToast, Heading, Box } from "@chakra-ui/react";
 import { PublicKey } from "@solana/web3.js";
 import { Program, AnchorProvider, web3 } from "@coral-xyz/anchor";
-import idl from "../../idl/news_quest.json"; 
+import idl from "../../idl/news_quest.json";
 import { BN } from "bn.js";
 import { Buffer } from "buffer";
 
+
 const ClaimReward = () => {
+  const TOKEN_PROGRAM_ID = new PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA");
+  const ASSOCIATED_TOKEN_PROGRAM_ID = new PublicKey("ATokenGVdyoVbCjHbSTvF6r9f9BeY6bD1tqhZy5iTjHL");
+
   const [questId, setQuestId] = useState("");
   const toast = useToast();
 
@@ -21,6 +25,10 @@ const ClaimReward = () => {
         window.solana,
         { preflightCommitment: "processed" }
       );
+
+      if (typeof window !== "undefined") {
+        window.Buffer = Buffer;
+      }
 
       const programId = new PublicKey("5Whv2g9gDJZnj9nsh2DFgQS9KQek7PZT4CJZeGxB1RxY");
       const program = new Program(idl, provider);
@@ -49,14 +57,15 @@ const ClaimReward = () => {
       const daoConfig = await program.account.daoConfig.fetch(daoConfigPda);
       const rewardMint = daoConfig.rewardMint;
 
-      const ata = await PublicKey.findProgramAddressSync(
+      const ata = PublicKey.findProgramAddressSync(
         [
           user.toBuffer(),
-          Token.TOKEN_PROGRAM_ID.toBuffer(),
+          TOKEN_PROGRAM_ID.toBuffer(),
           rewardMint.toBuffer(),
         ],
-        Token.ASSOCIATED_PROGRAM_ID
+        ASSOCIATED_TOKEN_PROGRAM_ID
       );
+
 
       await program.methods
         .claimReward(new BN(id))
@@ -67,7 +76,7 @@ const ClaimReward = () => {
           voteRecord: voteRecordPda,
           tokenMint: rewardMint,
           userTokenAccount: ata[0],
-          tokenProgram: Token.TOKEN_PROGRAM_ID,
+          tokenProgram: TOKEN_PROGRAM_ID,
         })
         .rpc();
 
