@@ -32,7 +32,7 @@ pub struct EndQuest<'info> {
 impl<'info> EndQuest<'info> {
     pub fn process(&mut self) -> Result<()> {
         require_keys_eq!(
-            self.dao_config.admin,
+            self.dao_config.addr,
             self.admin.key(),
             AppError::Unauthorized
         );
