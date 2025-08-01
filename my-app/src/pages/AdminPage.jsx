@@ -10,27 +10,18 @@ import {
   FaUsers,
   FaCertificate,
   FaCog,
+  FaMinusCircle,
+  FaInfoCircle,
 } from "react-icons/fa";
 
 const AdminPage = () => {
   const [currentFeature, setCurrentFeature] = useState(null);
 
   const features = [
-    { id: "createQuest", label: "Create Quest", icon: <FaUserPlus /> },
-    { id: "endQuest", label: "End Quest", icon: <FaUserMinus /> },
-    { id: "viewQuestion", label: "View Question", icon: <FaPlusCircle /> },
-    { id: "viewTotalVotes", label: "View Total Votes", icon: <FaUsers /> },
-    // { id: "addAdmin", label: "Add Admin", icon: <FaUserPlus /> },
-    // { id: "showAllRound", label: "Voting Round Detail", icon: <FaUsers /> },
-    // { id: "getVotersDontVote", label: "Unvoted list", icon: <FaUsers /> },
-    // { id: "getResult", label: "Show Result", icon: <FaCertificate /> },
-    // { id: "createCertificate", label: "Create Certification", icon: <FaCertificate /> },
-    // { id: "manageSoul", label: "Manage Certification", icon: <FaCog /> },
-    // { id: "removeAdmin", label: "Remove Admin", icon: <FaUserMinus /> },
-    // { id: "showVoter", label: "Voter List", icon: <FaUsers /> },
-    // { id: "showAdmin", label: "Admin List", icon: <FaUsers /> },
-    // { id: "setNameAdmin", label: "Set Your Name", icon: <FaCog /> },
-    // { id: "chooseBest", label: "Choose Final Winner ", icon: <FaCog /> },
+    { id: "createQuest", label: "Create Quest", icon: <FaCertificate /> },
+    { id: "endQuest", label: "End Quest", icon: <FaMinusCircle /> },
+    { id: "viewQuestion", label: "View Question", icon: <FaInfoCircle /> },
+    { id: "viewTotalVotes", label: "View Total Votes", icon: <FaInfoCircle /> },
   ];
 
   return (

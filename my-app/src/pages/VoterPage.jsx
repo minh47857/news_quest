@@ -11,9 +11,7 @@ const VoterPage = () => {
   const features = [
     { id: "voteQuestion", label: "VOTE FOR QUEST", icon: <FaVoteYea /> },
     { id: "claimReward", label: "CLAIM REWARD", icon: <FaVoteYea /> },
-    { id: "viewQuestion", label: "VIEW QUEST DETAILS", icon: <FaUndo /> },
-    // { id: "removeVoteSpeaker", label: "REMOVE VOTE FOR SPEAKER", icon: <FaUndo /> },
-    // { id: "getSeminarDetail", label: "QUEST DETAILS", icon: <FaInfoCircle /> },
+    { id: "viewQuestion", label: "VIEW QUEST DETAILS", icon: <FaInfoCircle /> },
   ];
 
   return (
