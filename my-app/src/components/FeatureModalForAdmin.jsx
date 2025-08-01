@@ -11,12 +11,8 @@ const FeatureModalForAdmin = ({ featureId, onClose }) => {
     switch (featureId) {
       case "createQuest":
         return <CreateQuest />;
-      case "endQuest":
-        return <EndQuest />;
       case "viewQuestion":
         return <ViewQuestion />;
-      case "viewTotalVotes":
-        return <ViewTotalVotes />;
       case "viewAllActiveQuestions":
         return <ViewAllActiveQuestions />;
       default:
@@ -25,12 +21,12 @@ const FeatureModalForAdmin = ({ featureId, onClose }) => {
   };
 
   return (
-    <Modal isOpen={true} onClose={onClose} isCentered>
+    <Modal isOpen={true} onClose={onClose} isCentered size="6xl">
       <ModalOverlay />
-      <ModalContent>
+      <ModalContent maxW="90vw" minH="80vh">
         <ModalHeader>Feature Details</ModalHeader>
         <ModalCloseButton />
-        <ModalBody>{renderFeatureContent()}</ModalBody>
+        <ModalBody p={6}>{renderFeatureContent()}</ModalBody>
       </ModalContent>
     </Modal>
   );

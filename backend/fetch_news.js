@@ -10,12 +10,17 @@ const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
 
 /**
  * A simple sleep function to pause execution.
- * @param ms The number of milliseconds to sleep.
+ * @param {number} ms The number of milliseconds to sleep.
  */
-const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-
-async function generatePoll(title: string, description: string): Promise<{ question: string; choices: string[] }> {
+/**
+ * Generate a poll from news title and description
+ * @param {string} title 
+ * @param {string} description 
+ * @returns {Promise<{question: string, choices: string[]}>}
+ */
+async function generatePoll(title, description) {
   const prompt = `
 Given the following news headline and description, generate an insightful public voting question and 3–4 meaningful options for people to choose from.
 
@@ -42,21 +47,20 @@ Description: ${description}
   }
 }
 
-export interface NewsPoll {
-  title: string;
-  description: string;
-  published_at: string;
-  question: string;
-  choices: string[];
-}
-
+/**
+ * Fetch news polls from API
+ * @param {number} pageSize 
+ * @param {string} sources 
+ * @param {string} language 
+ * @returns {Promise<Array<{title: string, description: string, published_at: string, question: string, choices: string[]}>>}
+ */
 export async function fetchNewsPolls(
   pageSize = 5,
   sources = 'techcrunch, crypto-coins-news',
   language = 'en'
-): Promise<NewsPoll[]> {
+) {
   const topHeadlines = await newsapi.v2.topHeadlines({ sources, language, page: 1, pageSize });
-  const output: NewsPoll[] = [];
+  const output = [];
 
   for (const article of topHeadlines.articles) {
     const { title, description, publishedAt } = article;

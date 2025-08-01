@@ -19,9 +19,7 @@ const AdminPage = () => {
 
   const features = [
     { id: "createQuest", label: "Create Quest", icon: <FaCertificate /> },
-    { id: "endQuest", label: "End Quest", icon: <FaMinusCircle /> },
     { id: "viewQuestion", label: "View Question", icon: <FaInfoCircle /> },
-    { id: "viewTotalVotes", label: "View Total Votes", icon: <FaInfoCircle /> },
     { id: "viewAllActiveQuestions", label: "View All Active Questions", icon: <FaInfoCircle /> },
   ];
 
