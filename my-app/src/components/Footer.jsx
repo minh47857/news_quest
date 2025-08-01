@@ -7,12 +7,12 @@ function Footer() {
       bg="teal.500"
       color="white"
       textAlign="center"
-      py={2} // Giảm chiều cao của footer
+      py={2} // Reduce footer height
       fontSize="sm"
       borderTop="1px solid #e0e0e0"
     >
       <Text>
-        &copy; 2025 AI Powered New Quests. Powered by  A-Squad
+        &copy; 2025 AIDAO Nexus. Powered by  A-Squad
       </Text>
     </Box>
   );

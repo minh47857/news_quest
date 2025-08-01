@@ -4,9 +4,9 @@ import { Link } from "react-router-dom";
 function Navbar() {
   return (
     <Box
-      bg="rgba(0, 128, 128, 0.8)" // Màu nền trong suốt
-      backdropFilter="blur(10px)" // Hiệu ứng làm mờ nền phía sau
-      boxShadow="0px 4px 15px rgba(0, 0, 0, 0.2)" // Hiệu ứng in chìm
+      bg="rgba(0, 128, 128, 0.8)" // Transparent background color
+      backdropFilter="blur(10px)" // Background blur effect
+      boxShadow="0px 4px 15px rgba(0, 0, 0, 0.2)" // Drop shadow effect
       position="sticky"
       top="0"
       zIndex="10"
@@ -32,7 +32,7 @@ function Navbar() {
         }}
         transition="all 0.3s ease-in-out"
       >
-         AI powered News Quest
+         AIDAO Nexus
       </ChakraLink>
         <Flex gap={4}>
           <ChakraLink

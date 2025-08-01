@@ -12,6 +12,7 @@ const VoterPage = () => {
     { id: "voteQuestion", label: "VOTE FOR QUEST", icon: <FaVoteYea /> },
     { id: "claimReward", label: "CLAIM REWARD", icon: <FaVoteYea /> },
     { id: "viewQuestion", label: "VIEW QUEST DETAILS", icon: <FaInfoCircle /> },
+    { id: "viewAllActiveQuestions", label: "VIEW ALL ACTIVE QUESTS", icon: <FaInfoCircle /> },
   ];
 
   return (
@@ -42,7 +43,7 @@ const VoterPage = () => {
         Your browser does not support the video tag.
       </video>
 
-      <Navbar isLoggedIn={true} title="Trang Voter" />
+      <Navbar isLoggedIn={true} title="Voter Page" />
       <Box
         as="main"
         flex="1"
@@ -73,11 +74,11 @@ const VoterPage = () => {
         {/* Feature Grid */}
         <Grid
           templateColumns={{
-            base: "repeat(1, 1fr)", // 1 cột trên màn hình nhỏ
-            md: "repeat(2, 1fr)", // 2 cột trên màn hình trung bình
-            lg: "repeat(3, 1fr)", // 3 cột trên màn hình lớn
+            base: "repeat(1, 1fr)", // 1 column on small screens
+            md: "repeat(2, 1fr)", // 2 columns on medium screens
+            lg: "repeat(3, 1fr)", // 3 columns on large screens
           }}
-          gap={6} // Khoảng cách giữa các nút
+          gap={6} // Gap between buttons
           px={4}
           justifyContent="center"
         >
@@ -86,10 +87,10 @@ const VoterPage = () => {
               key={feature.id}
               leftIcon={feature.icon}
               colorScheme="teal"
-              size="md" // Kích thước nhỏ hơn
-              minWidth="180px" // Chiều rộng tối thiểu
-              minHeight="70px" // Chiều cao tối thiểu
-              fontSize="lg" // Kích thước chữ nhỏ hơn
+              size="md" // Smaller size
+              minWidth="180px" // Minimum width
+              minHeight="70px" // Minimum height
+              fontSize="lg" // Smaller font size
               fontWeight="bold"
               borderRadius="md"
               boxShadow="lg"

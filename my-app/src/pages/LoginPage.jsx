@@ -20,7 +20,7 @@ function LoginPage() {
   const [currentAccount, setCurrentAccount] = useState(null);
   const [isConnecting, setIsConnecting] = useState(false);
   const [error, setError] = useState("");
-  const [roleInput, setRoleInput] = useState(""); // input cho user nhập vai trò
+  const [roleInput, setRoleInput] = useState(""); // input for user to enter role
   const navigate = useNavigate();
 
   const connectWallet = async () => {

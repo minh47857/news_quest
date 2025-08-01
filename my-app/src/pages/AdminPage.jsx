@@ -22,6 +22,7 @@ const AdminPage = () => {
     { id: "endQuest", label: "End Quest", icon: <FaMinusCircle /> },
     { id: "viewQuestion", label: "View Question", icon: <FaInfoCircle /> },
     { id: "viewTotalVotes", label: "View Total Votes", icon: <FaInfoCircle /> },
+    { id: "viewAllActiveQuestions", label: "View All Active Questions", icon: <FaInfoCircle /> },
   ];
 
   return (
@@ -52,7 +53,7 @@ const AdminPage = () => {
         Your browser does not support the video tag.
       </video>
 
-      <Navbar isLoggedIn={true} title="Quản Trị" />
+      <Navbar isLoggedIn={true} title="Admin Panel" />
       <Box
         as="main"
         flex="1"
@@ -83,11 +84,11 @@ const AdminPage = () => {
         {/* Feature Grid */}
         <Grid
           templateColumns={{
-            base: "repeat(1, 1fr)", // 1 cột trên màn hình nhỏ
-            md: "repeat(2, 1fr)", // 2 cột trên màn hình trung bình
-            lg: "repeat(3, 1fr)", // 3 cột trên màn hình lớn
+            base: "repeat(1, 1fr)", // 1 column on small screens
+            md: "repeat(2, 1fr)", // 2 columns on medium screens
+            lg: "repeat(3, 1fr)", // 3 columns on large screens
           }}
-          gap={6} // Giảm khoảng cách giữa các nút
+          gap={6} // Reduce gap between buttons
           px={4}
           justifyContent="center"
         >
@@ -96,10 +97,10 @@ const AdminPage = () => {
               key={feature.id}
               leftIcon={feature.icon}
               colorScheme="teal"
-              size="md" // Kích thước nhỏ hơn
-              minWidth="180px" // Chiều rộng tối thiểu
-              minHeight="70px" // Chiều cao tối thiểu
-              fontSize="lg" // Kích thước chữ nhỏ hơn
+              size="md" // Smaller size
+              minWidth="180px" // Minimum width
+              minHeight="70px" // Minimum height
+              fontSize="lg" // Smaller font size
               fontWeight="bold"
               borderRadius="md"
               boxShadow="lg"
