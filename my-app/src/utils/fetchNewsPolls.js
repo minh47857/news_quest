@@ -113,7 +113,7 @@ export async function fetchRealNewsPolls(pageSize = 5) {
   try {
     // Example with a hypothetical CORS-enabled news API
     // You would need to replace with an actual API that allows browser requests
-    const response = await fetch(`https://api.example-news.com/headlines?limit=${pageSize}`);
+    const response = await fetch(`https://newsapi.org/v2/top-headlines?apiKey=4e530866233148ba8a271b21f2b61210&sources=crypto-coins-news&pageSize=5`);
     const data = await response.json();
     
     // Transform the real news data into poll format
