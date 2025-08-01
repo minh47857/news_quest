@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import { Input, Button, VStack, useToast, Heading, Box } from "@chakra-ui/react";
 import { PublicKey } from "@solana/web3.js";
-import { Program, AnchorProvider, web3 } from "@project-serum/anchor";
+import { Program, AnchorProvider, web3 } from "@coral-xyz/anchor";
 import idl from "../../idl/news_quest.json"; 
+import { BN } from "bn.js";
+import { Buffer } from "buffer";
 
 const ClaimReward = () => {
   const [questId, setQuestId] = useState("");
