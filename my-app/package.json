@@ -1,11 +1,11 @@
 {
-  "name": "front_end",
+  "name": "my-app",
   "private": true,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview"
   },
@@ -39,7 +39,6 @@
     "@solana/web3.js": "^1.95.0",
     "@coral-xyz/anchor": "^0.31.1",
     "bs58": "^5.0.0",
-    "buffer": "^6.0.3",
-    "dotenv": "^16.4.7"
+    "buffer": "^6.0.3"
   }
 }
