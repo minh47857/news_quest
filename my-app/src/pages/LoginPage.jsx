@@ -11,8 +11,13 @@ import {
   Alert,
   AlertIcon,
   VStack,
-  Input,
 } from "@chakra-ui/react";
+
+import { Connection, PublicKey } from "@solana/web3.js";
+import { AnchorProvider, Program } from "@coral-xyz/anchor";
+import idl from "../idl/news_quest.json";
+
+const programId = new PublicKey("6LWu2MDNZyBkkJ2gr6KL2hPqkRmDUac6VNNuw4TCdKEX");
 
 let accountAddress = "";
 
@@ -20,7 +25,8 @@ function LoginPage() {
   const [currentAccount, setCurrentAccount] = useState(null);
   const [isConnecting, setIsConnecting] = useState(false);
   const [error, setError] = useState("");
-  const [roleInput, setRoleInput] = useState(""); // input cho user nhập vai trò
+  const [loadingRole, setLoadingRole] = useState(false);
+  const [userRole, setUserRole] = useState(null); // "admin" | "voter" | null
   const navigate = useNavigate();
 
   const connectWallet = async () => {
@@ -46,13 +52,28 @@ function LoginPage() {
     }
   };
 
-  const checkUserRole = () => {
-    if (roleInput === "0") {
-      navigate("/voter");
-    } else if (roleInput === "1") {
-      navigate("/admin");
-    } else {
-      setError("Please enter 0 (voter) or 1 (admin).");
+  const fetchUserRole = async () => {
+    setLoadingRole(true);
+    try {
+      const connection = new Connection("https://api.devnet.solana.com");
+      const provider = new AnchorProvider(connection, window.solana, {});
+      const program = new Program(idl, programId, provider);
+
+      const [voteRecordPDA] = PublicKey.findProgramAddressSync(
+        [
+          Buffer.from("vote-record"),
+          new PublicKey(currentAccount).toBuffer(),
+        ],
+        program.programId
+      );
+
+      const voteRecord = await program.account.voteRecord.fetch(voteRecordPDA);
+      setUserRole(voteRecord.choice === 1 ? "admin" : "voter");
+    } catch (err) {
+      console.warn("Vote record not found or failed to fetch:", err);
+      setUserRole("voter"); 
+    } finally {
+      setLoadingRole(false);
     }
   };
 
@@ -61,13 +82,15 @@ function LoginPage() {
     if (!provider || !provider.isPhantom) return;
 
     const handleConnect = () => {
-      setCurrentAccount(provider.publicKey.toString());
-      accountAddress = provider.publicKey.toString();
+      const pubKey = provider.publicKey.toString();
+      setCurrentAccount(pubKey);
+      accountAddress = pubKey;
     };
 
     const handleDisconnect = () => {
       setCurrentAccount(null);
       accountAddress = "";
+      setUserRole(null);
       setError("You have disconnected your wallet.");
     };
 
@@ -80,11 +103,32 @@ function LoginPage() {
     };
   }, []);
 
+  useEffect(() => {
+    if (currentAccount) {
+      fetchUserRole();
+    }
+  }, [currentAccount]);
+
   return (
     <Box minHeight="100vh" display="flex" flexDirection="column">
       <Navbar />
-      <Box as="main" flex="1" display="flex" alignItems="center" justifyContent="center" p={8} bg="gray.100">
-        <Box bg="white" p={8} borderRadius="lg" boxShadow="lg" width="400px" textAlign="center">
+      <Box
+        as="main"
+        flex="1"
+        display="flex"
+        alignItems="center"
+        justifyContent="center"
+        p={8}
+        bg="gray.100"
+      >
+        <Box
+          bg="white"
+          p={8}
+          borderRadius="lg"
+          boxShadow="lg"
+          width="400px"
+          textAlign="center"
+        >
           <Heading mb={6} color="teal.500">
             Login Page
           </Heading>
@@ -96,23 +140,40 @@ function LoginPage() {
               </Alert>
             )}
             {!currentAccount ? (
-              <Button colorScheme="teal" onClick={connectWallet} width="100%" isLoading={isConnecting}>
+              <Button
+                colorScheme="teal"
+                onClick={connectWallet}
+                width="100%"
+                isLoading={isConnecting}
+              >
                 Connect Phantom Wallet
               </Button>
+            ) : loadingRole ? (
+              <Spinner />
             ) : (
               <Box width="100%">
                 <Text mb={2} fontSize="md">
                   Wallet Address: {currentAccount}
                 </Text>
-                <Input
-                  placeholder="Enter 0 (voter) or 1 (admin)"
-                  value={roleInput}
-                  onChange={(e) => setRoleInput(e.target.value)}
-                  mb={2}
-                />
-                <Button colorScheme="teal" onClick={checkUserRole} width="100%">
-                  Continue
-                </Button>
+
+                {userRole && (
+                  <>
+                    <Text mb={4} fontSize="lg" fontWeight="semibold">
+                      Role: {userRole === "admin" ? "Admin" : "Voter"}
+                    </Text>
+                    <Button
+                      colorScheme={userRole === "admin" ? "red" : "teal"}
+                      width="100%"
+                      onClick={() =>
+                        navigate(userRole === "admin" ? "/admin" : "/voter")
+                      }
+                    >
+                      {userRole === "admin"
+                        ? "Go to Admin Dashboard"
+                        : "Go to Voter Dashboard"}
+                    </Button>
+                  </>
+                )}
               </Box>
             )}
           </VStack>
