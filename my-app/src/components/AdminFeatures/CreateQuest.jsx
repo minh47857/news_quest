@@ -17,21 +17,28 @@ import {
   NumberDecrementStepper,
   HStack,
   IconButton,
-  Divider
+  Divider,
+  Select,
+  Badge
 } from "@chakra-ui/react";
-import { AddIcon, CloseIcon } from "@chakra-ui/icons";
+import { AddIcon, CloseIcon, StarIcon } from "@chakra-ui/icons";
 import { Connection, PublicKey } from "@solana/web3.js";
 import * as anchor from "@coral-xyz/anchor";
 import NewsQuestProgram from "../../utils/NewsQuestProgram";
 import { accountAddress } from "../../pages/LoginPage";
 
+import { fetchNewsPolls } from "../../../../backend/getData.ts";
+
 const CreateQuest = () => {
   const [title, setTitle] = useState("");
   const [imageUri, setImageUri] = useState("");
-  const [choices, setChoices] = useState(["", ""]); // Ít nhất 2 choices
+  const [choices, setChoices] = useState(["", ""]);
   const [deadline, setDeadline] = useState("");
   const [rewardPerVote, setRewardPerVote] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingAI, setIsLoadingAI] = useState(false);
+  const [newsPolls, setNewsPolls] = useState([]);
+  const [selectedPoll, setSelectedPoll] = useState("");
   const toast = useToast();
 
   // Lấy wallet address từ LoginPage
@@ -39,14 +46,66 @@ const CreateQuest = () => {
     return accountAddress || '';
   };
 
+  // Fetch news polls từ API
+  const fetchAndSetNewsPolls = async () => {
+    const data = await fetchNewsPolls();
+    setIsLoadingAI(true);
+    try {
+      setNewsPolls(data);
+      toast({
+        title: "Success",
+        description: `Loaded ${data.length} AI-generated polls`,
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+      });
+    } catch (error) {
+      console.error("Error fetching news polls:", error);
+      toast({
+        title: "Error",
+        description: "Failed to fetch AI suggestions",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    } finally {
+      setIsLoadingAI(false);
+    }
+  };
+
+  // Áp dụng poll được chọn
+  const applySelectedPoll = () => {
+    if (!selectedPoll) return;
+    
+    const poll = newsPolls.find(p => p.title === selectedPoll);
+    if (poll) {
+      setTitle(poll.title);
+      setImageUri("https://via.placeholder.com/400x200?text=News+Quest");
+      setChoices(poll.choices);
+      // Set deadline to 7 days from now
+      const futureDate = new Date();
+      futureDate.setDate(futureDate.getDate() + 7);
+      setDeadline(futureDate.toISOString().slice(0, 16));
+      setRewardPerVote("10");
+      
+      toast({
+        title: "Applied",
+        description: "AI suggestion applied to form",
+        status: "success",
+        duration: 2000,
+        isClosable: true,
+      });
+    }
+  };
+
   const addChoice = () => {
-    if (choices.length < 10) { // Tối đa 10 choices
+    if (choices.length < 10) {
       setChoices([...choices, ""]);
     }
   };
 
   const removeChoice = (index) => {
-    if (choices.length > 2) { // Ít nhất 2 choices
+    if (choices.length > 2) {
       const newChoices = choices.filter((_, i) => i !== index);
       setChoices(newChoices);
     }
@@ -228,6 +287,75 @@ const CreateQuest = () => {
       <Heading size="lg" mb={6} color="teal.500">
         Create New Quest
       </Heading>
+      
+      {/* AI Suggestions Section */}
+      <Box mb={6} p={4} border="1px" borderColor="gray.200" borderRadius="md">
+        <HStack justify="space-between" mb={4}>
+          <Heading size="md" color="purple.500">
+            <StarIcon mr={2} />
+            AI Suggestions From News
+          </Heading>
+          <Button
+            onClick={fetchAndSetNewsPolls}
+            isLoading={isLoadingAI}
+            loadingText="Loading AI..."
+            colorScheme="purple"
+            size="sm"
+          >
+            Generate
+          </Button>
+        </HStack>
+
+        {newsPolls.length > 0 && (
+          <VStack spacing={3} align="stretch">
+            <FormControl>
+              <FormLabel>Select AI-Generated Poll</FormLabel>
+              <Select
+                placeholder="Choose a poll to apply"
+                value={selectedPoll}
+                onChange={(e) => setSelectedPoll(e.target.value)}
+              >
+                {newsPolls.map((poll, index) => (
+                  <option key={index} value={poll.title}>
+                    {poll.title}
+                  </option>
+                ))}
+              </Select>
+            </FormControl>
+
+            {selectedPoll && (
+              <Box p={3} bg="purple.50" borderRadius="md">
+                <Text fontSize="sm" fontWeight="bold" mb={2}>
+                  Selected Poll:
+                </Text>
+                <Text fontSize="sm" mb={2}>
+                  <strong>Question:</strong> {newsPolls.find(p => p.title === selectedPoll)?.question}
+                </Text>
+                <Text fontSize="sm" mb={2}>
+                  <strong>Choices:</strong>
+                </Text>
+                <HStack flexWrap="wrap" spacing={1}>
+                  {newsPolls.find(p => p.title === selectedPoll)?.choices.map((choice, idx) => (
+                    <Badge key={idx} colorScheme="purple" variant="subtle">
+                      {choice}
+                    </Badge>
+                  ))}
+                </HStack>
+                <Button
+                  onClick={applySelectedPoll}
+                  colorScheme="purple"
+                  size="sm"
+                  mt={2}
+                >
+                  Apply to Form
+                </Button>
+              </Box>
+            )}
+          </VStack>
+        )}
+      </Box>
+
+      <Divider mb={6} />
       
       <VStack spacing={4} align="stretch">
         <FormControl isRequired>
