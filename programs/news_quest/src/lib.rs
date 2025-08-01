@@ -11,8 +11,8 @@ declare_id!("6LWu2MDNZyBkkJ2gr6KL2hPqkRmDUac6VNNuw4TCdKEX");
 #[program]
 pub mod news_quest {
     use super::*;
-    pub fn initialize(ctx: Context<Initialize>, reward_mint: Pubkey, is_admin: bool) -> Result<()> {
-        ctx.accounts.initialize(reward_mint, is_admin)
+    pub fn initialize(ctx: Context<Initialize>, reward_mint: Pubkey) -> Result<()> {
+        ctx.accounts.initialize(reward_mint)
     }
 
     pub fn create_quest(
@@ -39,4 +39,3 @@ pub mod news_quest {
         ctx.accounts.process()
     }
 }
-
