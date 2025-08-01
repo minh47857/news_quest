@@ -2,15 +2,25 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import { Box, Button, Heading, Text, Spinner, Alert, AlertIcon, VStack } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Heading,
+  Text,
+  Spinner,
+  Alert,
+  AlertIcon,
+  VStack,
+  Input,
+} from "@chakra-ui/react";
 
 let accountAddress = "";
 
 function LoginPage() {
-    /* add logic */
   const [currentAccount, setCurrentAccount] = useState(null);
   const [isConnecting, setIsConnecting] = useState(false);
   const [error, setError] = useState("");
+  const [roleInput, setRoleInput] = useState(""); // input cho user nhập vai trò
   const navigate = useNavigate();
 
   const connectWallet = async () => {
@@ -25,8 +35,9 @@ function LoginPage() {
       }
 
       const resp = await provider.connect();
-      setCurrentAccount(resp.publicKey.toString());
-      accountAddress = resp.publicKey.toString();
+      const publicKey = resp.publicKey.toString();
+      setCurrentAccount(publicKey);
+      accountAddress = publicKey;
     } catch (err) {
       console.error("Error connecting to Phantom:", err);
       setError("Unable to connect to Phantom Wallet.");
@@ -35,7 +46,16 @@ function LoginPage() {
     }
   };
 
-  // Lắng nghe thay đổi tài khoản Phantom
+  const checkUserRole = () => {
+    if (roleInput === "0") {
+      navigate("/voter");
+    } else if (roleInput === "1") {
+      navigate("/admin");
+    } else {
+      setError("Please enter 0 (voter) or 1 (admin).");
+    }
+  };
+
   useEffect(() => {
     const provider = window.solana;
     if (!provider || !provider.isPhantom) return;
@@ -80,12 +100,18 @@ function LoginPage() {
                 Connect Phantom Wallet
               </Button>
             ) : (
-              <Box>
-                <Text mb={4} fontSize="md">
+              <Box width="100%">
+                <Text mb={2} fontSize="md">
                   Wallet Address: {currentAccount}
                 </Text>
-                <Button colorScheme="teal" onClick={() => navigate("/dashboard")} width="100%">
-                  Go to Dashboard
+                <Input
+                  placeholder="Enter 0 (voter) or 1 (admin)"
+                  value={roleInput}
+                  onChange={(e) => setRoleInput(e.target.value)}
+                  mb={2}
+                />
+                <Button colorScheme="teal" onClick={checkUserRole} width="100%">
+                  Continue
                 </Button>
               </Box>
             )}
